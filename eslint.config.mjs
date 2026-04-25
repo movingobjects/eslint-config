@@ -7,6 +7,7 @@ import modulesNewlines from 'eslint-plugin-modules-newlines';
 import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import reactRefreshPlugin from 'eslint-plugin-react-refresh';
+import globals from 'globals';
 
 // Shared settings for both JS and TS
 const sharedSettings = {
@@ -437,15 +438,8 @@ export default [
     },
     languageOptions: {
       globals: {
-        // Browser globals
-        document: 'readonly',
-        window: 'readonly',
-        navigator: 'readonly',
-        // Node.js globals
-        __dirname: 'readonly',
-        __filename: 'readonly',
-        process: 'readonly',
-        console: 'readonly',
+        ...globals.browser,
+        ...globals.node,
       },
       parserOptions: {
         ecmaVersion: 'latest',
@@ -485,7 +479,6 @@ export default [
         ecmaVersion: 'latest',
         sourceType: 'module',
         ecmaFeatures: { jsx: true },
-        projectService: true,
       },
     },
     settings: sharedSettings,
@@ -510,11 +503,8 @@ export default [
         },
       ],
       '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-non-null-assertion': 'warn',
 
-      // Type-aware rules (require projectService)
-      '@typescript-eslint/await-thenable': 'warn',
     },
   },
   // JSX/TSX files — Vite/React refresh rule
