@@ -1,6 +1,6 @@
 {
   "name": "@movingobjects/eslint-config",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "ESLint config for Moving Objects projects",
   "author": "Scott Thiessen <scott@movingobjects.io>",
   "repository": {
