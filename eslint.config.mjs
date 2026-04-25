@@ -1,0 +1,533 @@
+import js from '@eslint/js';
+import stylistic from '@stylistic/eslint-plugin';
+import tseslint from '@typescript-eslint/eslint-plugin';
+import tsParser from '@typescript-eslint/parser';
+import importPlugin from 'eslint-plugin-import-x';
+import modulesNewlines from 'eslint-plugin-modules-newlines';
+import reactPlugin from 'eslint-plugin-react';
+import reactHooksPlugin from 'eslint-plugin-react-hooks';
+import reactRefreshPlugin from 'eslint-plugin-react-refresh';
+
+// Shared settings for both JS and TS
+const sharedSettings = {
+  react: { version: 'detect' },
+  'import/resolver': {
+    node: {
+      extensions: [
+        '.js',
+        '.jsx',
+        '.mjs',
+        '.ts',
+        '.tsx',
+      ],
+    },
+  },
+  'import/internal-regex': '^@/',
+};
+
+// Shared rules for both JS and TS
+const sharedRules = {
+  // Stylistic rules
+  '@stylistic/array-bracket-newline': ['warn', { multiline: true }],
+  '@stylistic/array-bracket-spacing': ['warn', 'never'],
+  '@stylistic/array-element-newline': [
+    'warn',
+    {
+      consistent: true,
+      multiline: true,
+      minItems: 3,
+    },
+  ],
+  '@stylistic/arrow-parens': ['warn', 'always'],
+  '@stylistic/arrow-spacing': [
+    'warn',
+    {
+      before: true,
+      after: true,
+    },
+  ],
+  '@stylistic/block-spacing': ['warn', 'always'],
+  '@stylistic/brace-style': ['warn', '1tbs'],
+  '@stylistic/comma-dangle': ['warn', 'always-multiline'],
+  '@stylistic/comma-spacing': [
+    'warn',
+    {
+      before: false,
+      after: true,
+    },
+  ],
+  '@stylistic/comma-style': ['warn', 'last'],
+  '@stylistic/computed-property-spacing': ['warn', 'never'],
+  '@stylistic/curly-newline': ['warn', { minElements: 1 }],
+  '@stylistic/dot-location': ['warn', 'property'],
+  '@stylistic/eol-last': ['warn', 'always'],
+  '@stylistic/function-call-argument-newline': ['warn', 'consistent'],
+  '@stylistic/function-call-spacing': ['warn', 'never'],
+  '@stylistic/function-paren-newline': ['warn', 'consistent'],
+  '@stylistic/implicit-arrow-linebreak': ['warn', 'beside'],
+  '@stylistic/indent-binary-ops': ['warn', 2],
+  '@stylistic/indent': ['warn', 2],
+  '@stylistic/jsx-quotes': ['warn', 'prefer-double'],
+  '@stylistic/key-spacing': [
+    'warn',
+    {
+      beforeColon: false,
+      afterColon: true,
+      mode: 'strict',
+    },
+  ],
+  '@stylistic/keyword-spacing': [
+    'warn',
+    {
+      before: true,
+      after: true,
+    },
+  ],
+  '@stylistic/linebreak-style': ['warn', 'unix'],
+  '@stylistic/lines-between-class-members': [
+    'warn',
+    'always',
+    { exceptAfterSingleLine: true },
+  ],
+  '@stylistic/new-parens': ['warn', 'always'],
+  '@stylistic/newline-per-chained-call': ['warn'],
+  '@stylistic/no-confusing-arrow': ['warn'],
+  '@stylistic/no-extra-semi': ['warn'],
+  '@stylistic/no-floating-decimal': ['warn'],
+  '@stylistic/no-mixed-operators': [
+    'warn',
+    {
+      groups: [
+        [
+          '&',
+          '|',
+          '^',
+          '~',
+          '<<',
+          '>>',
+          '>>>',
+        ],
+        [
+          '==',
+          '!=',
+          '===',
+          '!==',
+          '>',
+          '>=',
+          '<',
+          '<=',
+        ],
+        ['&&', '||'],
+        ['in', 'instanceof'],
+      ],
+      allowSamePrecedence: true,
+    },
+  ],
+  '@stylistic/no-mixed-spaces-and-tabs': ['warn'],
+  '@stylistic/no-multi-spaces': ['warn'],
+  '@stylistic/no-multiple-empty-lines': [
+    'warn',
+    {
+      max: 1,
+      maxBOF: 0,
+      maxEOF: 0,
+    },
+  ],
+  '@stylistic/no-tabs': ['warn'],
+  '@stylistic/no-trailing-spaces': ['warn'],
+  '@stylistic/no-whitespace-before-property': ['warn'],
+  '@stylistic/nonblock-statement-body-position': ['warn', 'beside'],
+  '@stylistic/object-curly-newline': [
+    'warn',
+    {
+      ObjectExpression: {
+        multiline: true,
+        minProperties: 2,
+      },
+      ObjectPattern: {
+        multiline: true,
+        minProperties: 2,
+      },
+      ImportDeclaration: {
+        multiline: true,
+        minProperties: 2,
+      },
+      ExportDeclaration: {
+        multiline: true,
+        minProperties: 2,
+      },
+      TSTypeLiteral: {
+        multiline: true,
+        minProperties: 2,
+      },
+    },
+  ],
+  '@stylistic/object-curly-spacing': ['warn', 'always'],
+  '@stylistic/object-property-newline': ['warn', { allowAllPropertiesOnSameLine: false }],
+  '@stylistic/one-var-declaration-per-line': ['warn', 'initializations'],
+  '@stylistic/operator-linebreak': [
+    'warn',
+    'after',
+    {
+      overrides: {
+        '?': 'before',
+        ':': 'before',
+        '|': 'after',
+      },
+    },
+  ],
+  '@stylistic/padded-blocks': ['warn', 'never'],
+  '@stylistic/quote-props': ['warn', 'as-needed'],
+  '@stylistic/quotes': [
+    'warn',
+    'single',
+    {
+      avoidEscape: true,
+      allowTemplateLiterals: 'always',
+    },
+  ],
+  '@stylistic/rest-spread-spacing': ['warn', 'never'],
+  '@stylistic/semi': ['warn', 'always'],
+  '@stylistic/semi-spacing': [
+    'warn',
+    {
+      before: false,
+      after: true,
+    },
+  ],
+  '@stylistic/semi-style': ['warn', 'last'],
+  '@stylistic/space-before-blocks': ['warn', 'always'],
+  '@stylistic/space-before-function-paren': ['warn', 'never'],
+  '@stylistic/space-in-parens': ['warn', 'never'],
+  '@stylistic/space-infix-ops': ['warn', { int32Hint: false }],
+  '@stylistic/space-unary-ops': [
+    'warn',
+    {
+      words: true,
+      nonwords: false,
+    },
+  ],
+  '@stylistic/template-curly-spacing': ['warn', 'never'],
+  '@stylistic/template-tag-spacing': ['warn', 'never'],
+  '@stylistic/type-annotation-spacing': ['warn'],
+  '@stylistic/type-generic-spacing': ['warn'],
+  '@stylistic/type-named-tuple-spacing': ['warn'],
+
+  // General rules
+  'consistent-return': 'warn',
+  'no-shadow': 'warn',
+  'no-unreachable': 'warn',
+  'prefer-const': 'warn',
+
+  // Import rules
+  'import/order': [
+    'warn',
+    {
+      'newlines-between': 'never',
+      groups: [
+        'builtin',
+        'external',
+        'internal',
+        [
+          'parent',
+          'sibling',
+          'index',
+        ],
+      ],
+      pathGroups: [
+        {
+          pattern: '@/**',
+          group: 'internal',
+        },
+      ],
+      pathGroupsExcludedImportTypes: ['builtin'],
+      distinctGroup: false,
+      alphabetize: {
+        order: 'asc',
+        caseInsensitive: true,
+      },
+    },
+  ],
+  'modules-newlines/import-declaration-newline': 'warn',
+  'modules-newlines/export-declaration-newline': 'warn',
+  'sort-imports': [
+    'warn',
+    {
+      ignoreCase: true,
+      ignoreDeclarationSort: true,
+      ignoreMemberSort: false,
+      allowSeparatedGroups: true,
+    },
+  ],
+
+  // React Hooks
+  'react-hooks/exhaustive-deps': 'warn',
+  'react-hooks/rules-of-hooks': 'error',
+
+  // React — functional components
+  'react/button-has-type': [
+    'warn',
+    {
+      button: true,
+      submit: true,
+      reset: false,
+    },
+  ],
+  'react/destructuring-assignment': ['warn', 'always'],
+  'react/function-component-definition': [
+    'warn',
+    {
+      namedComponents: ['function-declaration', 'function-expression'],
+      unnamedComponents: 'function-expression',
+    },
+  ],
+  'react/jsx-boolean-value': ['warn', 'always'],
+  'react/jsx-closing-bracket-location': ['warn', 'after-props'],
+  'react/jsx-closing-tag-location': 'warn',
+  'react/jsx-curly-brace-presence': [
+    'warn',
+    {
+      props: 'never',
+      children: 'never',
+    },
+  ],
+  'react/jsx-curly-newline': [
+    'warn',
+    {
+      multiline: 'consistent',
+      singleline: 'consistent',
+    },
+  ],
+  'react/jsx-curly-spacing': [
+    'warn',
+    'never',
+    { allowMultiline: true },
+  ],
+  'react/jsx-equals-spacing': ['warn', 'never'],
+  'react/jsx-filename-extension': ['warn', { extensions: ['.jsx', '.tsx'] }],
+  'react/jsx-first-prop-new-line': ['warn', 'multiline-multiprop'],
+  'react/jsx-fragments': ['warn', 'syntax'],
+  'react/jsx-handler-names': [
+    'warn',
+    {
+      eventHandlerPrefix: 'on',
+      eventHandlerPropPrefix: 'on',
+    },
+  ],
+  'react/jsx-indent-props': ['warn', 2],
+  'react/jsx-indent': ['warn', 2],
+  'react/jsx-key': 'warn',
+  'react/jsx-max-props-per-line': [
+    'warn',
+    {
+      maximum: 1,
+      when: 'multiline',
+    },
+  ],
+  'react/jsx-no-bind': [
+    'warn',
+    {
+      ignoreRefs: true,
+      allowArrowFunctions: true,
+      allowFunctions: false,
+      allowBind: false,
+      ignoreDOMComponents: true,
+    },
+  ],
+  'react/jsx-no-comment-textnodes': 'warn',
+  'react/jsx-no-constructed-context-values': 'warn',
+  'react/jsx-no-duplicate-props': ['warn', { ignoreCase: true }],
+  'react/jsx-no-script-url': [
+    'warn',
+    [
+      {
+        name: 'Link',
+        props: ['to'],
+      },
+    ],
+  ],
+  'react/jsx-no-target-blank': ['warn', { enforceDynamicLinks: 'always' }],
+  'react/jsx-no-undef': 'warn',
+  'react/jsx-no-useless-fragment': 'warn',
+  'react/jsx-one-expression-per-line': ['warn', { allow: 'single-child' }],
+  'react/jsx-pascal-case': ['warn', { allowAllCaps: true }],
+  'react/jsx-props-no-multi-spaces': 'warn',
+  'react/jsx-props-no-spreading': [
+    'warn',
+    {
+      html: 'enforce',
+      custom: 'enforce',
+      explicitSpread: 'ignore',
+      exceptions: [],
+    },
+  ],
+  'react/jsx-sort-props': [
+    'warn',
+    {
+      ignoreCase: true,
+      callbacksLast: true,
+      shorthandFirst: false,
+      shorthandLast: false,
+      noSortAlphabetically: false,
+      reservedFirst: true,
+    },
+  ],
+  'react/jsx-tag-spacing': [
+    'warn',
+    {
+      closingSlash: 'never',
+      beforeSelfClosing: 'always',
+      afterOpening: 'never',
+      beforeClosing: 'never',
+    },
+  ],
+  'react/jsx-uses-vars': 'warn',
+  'react/jsx-wrap-multilines': [
+    'warn',
+    {
+      declaration: 'parens-new-line',
+      assignment: 'parens-new-line',
+      return: 'parens-new-line',
+      arrow: 'parens-new-line',
+      condition: 'parens-new-line',
+      logical: 'parens-new-line',
+      prop: 'parens-new-line',
+    },
+  ],
+  'react/no-array-index-key': 'warn',
+  'react/no-children-prop': 'warn',
+  'react/no-danger': 'warn',
+  'react/no-danger-with-children': 'warn',
+  'react/no-deprecated': 'warn',
+  'react/no-invalid-html-attribute': 'warn',
+  'react/no-namespace': 'warn',
+  'react/no-typos': 'warn',
+  'react/no-unknown-property': 'warn',
+  'react/no-unstable-nested-components': 'warn',
+  'react/no-unused-prop-types': 'warn',
+  'react/prefer-read-only-props': 'warn',
+  'react/self-closing-comp': 'warn',
+  'react/style-prop-object': 'warn',
+  'react/void-dom-elements-no-children': 'warn',
+};
+
+export default [
+  {
+    ignores: [
+      '**/node_modules/**',
+      '**/dist/**',
+      '**/dist-electron/**',
+      '**/build/**',
+      '**/.vite/**',
+      '**/*.min.js',
+      '**/coverage/**',
+    ],
+  },
+  js.configs.recommended,
+  // JavaScript files configuration
+  {
+    files: ['**/*.{js,jsx,mjs,cjs}'],
+    plugins: {
+      react: reactPlugin,
+      'react-hooks': reactHooksPlugin,
+      'react-refresh': reactRefreshPlugin,
+      '@stylistic': stylistic,
+      import: importPlugin,
+      'modules-newlines': modulesNewlines,
+    },
+    languageOptions: {
+      globals: {
+        // Browser globals
+        document: 'readonly',
+        window: 'readonly',
+        navigator: 'readonly',
+        // Node.js globals
+        __dirname: 'readonly',
+        __filename: 'readonly',
+        process: 'readonly',
+        console: 'readonly',
+      },
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: { jsx: true },
+      },
+    },
+    settings: sharedSettings,
+    rules: {
+      ...sharedRules,
+      // JS-specific rules
+      'no-unused-vars': [
+        'warn',
+        {
+          vars: 'all',
+          args: 'none',
+          ignoreRestSiblings: true,
+        },
+      ],
+    },
+  },
+  // TypeScript files configuration
+  {
+    files: ['**/*.{ts,tsx}'],
+    plugins: {
+      '@typescript-eslint': tseslint,
+      react: reactPlugin,
+      'react-hooks': reactHooksPlugin,
+      'react-refresh': reactRefreshPlugin,
+      '@stylistic': stylistic,
+      import: importPlugin,
+      'modules-newlines': modulesNewlines,
+    },
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+        ecmaFeatures: { jsx: true },
+        projectService: true,
+      },
+    },
+    settings: sharedSettings,
+    rules: {
+      ...sharedRules,
+      // Disable JS rules that conflict with TS
+      'no-unused-vars': 'off',
+      'no-undef': 'off',
+      'no-shadow': 'off',
+      'react/prop-types': 'off',
+
+      // TypeScript replacements for disabled JS rules
+      '@typescript-eslint/no-shadow': 'warn',
+
+      // TypeScript-specific rules
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          vars: 'all',
+          args: 'none',
+          ignoreRestSiblings: true,
+        },
+      ],
+      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'warn',
+
+      // Type-aware rules (require projectService)
+      '@typescript-eslint/await-thenable': 'warn',
+      '@typescript-eslint/no-floating-promises': 'warn',
+      '@typescript-eslint/no-misused-promises': [
+        'warn',
+        { checksVoidReturn: { attributes: false } },
+      ],
+    },
+  },
+  // JSX/TSX files — Vite/React refresh rule
+  {
+    files: ['**/*.{jsx,tsx}'],
+    plugins: { 'react-refresh': reactRefreshPlugin },
+    rules: {
+      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
+    },
+  },
+];
