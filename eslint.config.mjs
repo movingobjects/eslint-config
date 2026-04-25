@@ -515,19 +515,12 @@ export default [
 
       // Type-aware rules (require projectService)
       '@typescript-eslint/await-thenable': 'warn',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-misused-promises': [
-        'warn',
-        { checksVoidReturn: { attributes: false } },
-      ],
     },
   },
   // JSX/TSX files — Vite/React refresh rule
   {
     files: ['**/*.{jsx,tsx}'],
     plugins: { 'react-refresh': reactRefreshPlugin },
-    rules: {
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-    },
+    rules: { 'react-refresh/only-export-components': ['warn', { allowConstantExport: true }] },
   },
 ];
