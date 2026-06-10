@@ -8,6 +8,9 @@ import reactPlugin from 'eslint-plugin-react';
 import reactHooksPlugin from 'eslint-plugin-react-hooks';
 import reactRefreshPlugin from 'eslint-plugin-react-refresh';
 import globals from 'globals';
+import objectPatternPropertyNewline from './rules/object-pattern-property-newline.mjs';
+
+const localPlugin = { rules: { 'object-pattern-property-newline': objectPatternPropertyNewline } };
 
 // Shared settings for both JS and TS
 const sharedSettings = {
@@ -261,6 +264,9 @@ const sharedRules = {
     },
   ],
 
+  // Local rules
+  'local/object-pattern-property-newline': 'warn',
+
   // React Hooks
   'react-hooks/exhaustive-deps': 'warn',
   'react-hooks/rules-of-hooks': 'error',
@@ -429,6 +435,7 @@ export default [
   {
     files: ['**/*.{js,jsx,mjs,cjs}'],
     plugins: {
+      local: localPlugin,
       react: reactPlugin,
       'react-hooks': reactHooksPlugin,
       'react-refresh': reactRefreshPlugin,
@@ -465,6 +472,7 @@ export default [
   {
     files: ['**/*.{ts,tsx}'],
     plugins: {
+      local: localPlugin,
       '@typescript-eslint': tseslint,
       react: reactPlugin,
       'react-hooks': reactHooksPlugin,

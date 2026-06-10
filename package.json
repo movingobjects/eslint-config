@@ -12,7 +12,8 @@
     ".": "./eslint.config.mjs"
   },
   "files": [
-    "eslint.config.mjs"
+    "eslint.config.mjs",
+    "rules/"
   ],
   "keywords": [
     "eslint",
